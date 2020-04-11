@@ -3,7 +3,7 @@ ifeq ($(KERNELRELEASE),)
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build 
 PWD := $(shell pwd)  
 
-.PHONY: build clean  
+.PHONY: build clean
 
 build:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules  
