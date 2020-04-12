@@ -1,10 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <linux/kernel.h>      // for printk and other kernel bits
-#include <linux/sched.h>
-#include <asm/unistd.h>        // for system call constants
-
 #include <sys/types.h>
 #include <unistd.h>
 
