@@ -1,1 +1,0 @@
-cmd_/home/yz558/Rootkit/sneaky_mod.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o /home/yz558/Rootkit/sneaky_mod.ko /home/yz558/Rootkit/sneaky_mod.o /home/yz558/Rootkit/sneaky_mod.mod.o
