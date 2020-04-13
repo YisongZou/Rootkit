@@ -4,9 +4,6 @@
 ##### The detailed descripition of the project is inside requirements.pdf
 
 
-Please see [requirement.pdf](https://github.com/menyf/ECE650/blob/master/HW05_Kernel-prog/requirement.pdf) for specific requirement. 
-
-
 ## Usage
 
 Tests were ran on Duke virtual machine with **Ubuntu 16**.
