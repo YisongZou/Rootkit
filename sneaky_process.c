@@ -37,7 +37,7 @@ void unload(){
 
 //restore the /etc/passwd file
 void restore(){
-  system("cp /tmp/passwd /etc");
+  system("mv /tmp/passwd /etc");
 }
 
 int main(int argc, char *argv[]){

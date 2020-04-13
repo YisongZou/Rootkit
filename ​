@@ -1,0 +1,6 @@
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root        971  0.0  0.0  15932  1816 tty1     Ss+  22:47   0:00 /sbin/agetty --noclear tty1 linux
+yz558      1156  0.0  0.2  22644  5452 pts/0    Ss   22:47   0:00 -bash
+yz558      1354  0.0  0.2  22640  5384 pts/1    Ss   22:48   0:00 -bash
+root       1951  0.0  0.2  70612  5112 pts/0    S+   22:49   0:00 sudo ./sneaky_process
+yz558      1982  0.0  0.1  37360  3372 pts/1    R+   22:50   0:00 ps -a -u
